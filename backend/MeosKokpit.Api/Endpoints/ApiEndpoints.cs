@@ -297,7 +297,9 @@ public static class ApiEndpoints
         });
 
         // ------------------------------------------------------------ KITT sayfası
-        api.MapPost("/kitt/data", (OrdersRequest req, ConfigStore store, DataEngine engine, KittStore kitt) =>
+        api.MapPut("/kitt/rows/order", (OnMontajKeysRequest req, OnMontajStore om) => { om.SetKitRowOrder(req.Keys); return Results.Ok(); });
+
+        api.MapPost("/kitt/data", (OrdersRequest req, ConfigStore store, DataEngine engine, KittStore kitt, OnMontajStore om) =>
         {
             var cfg = store.Current.KittPage;
             try
@@ -333,6 +335,15 @@ public static class ApiEndpoints
                 }
                 if (dupCount > 0)
                     warnings.Add($"{dupCount} satırın anahtarı tekrar ediyor; bu satırlar sıra numarasıyla ayrıştırıldı. Anahtar kolonlarını kontrol edin.");
+
+                // Kullanıcının sürükleyerek belirlediği sıra (kayıtlı olmayan satırlar sona, kaynak sırasıyla)
+                var kitOrder = om.KitRowOrder();
+                if (kitOrder.Count > 0)
+                {
+                    var pos = new Dictionary<string, int>();
+                    for (var i = 0; i < kitOrder.Count; i++) pos.TryAdd(kitOrder[i], i);
+                    rows = rows.OrderBy(r => pos.TryGetValue((string)r["__key"]!, out var i) ? i : int.MaxValue).ToList();
+                }
 
                 var values = kitt.GetMany(rows.Select(r => (string)r["__key"]!));
                 return Results.Ok(new

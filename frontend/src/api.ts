@@ -74,6 +74,7 @@ export const api = {
 
   kittOrders: () => request<string[]>('GET', '/api/kitt/orders'),
   kittOrdersRemove: (orders: string[]) => request<void>('POST', '/api/kitt/orders/remove', { orders }),
+  kittSetRowOrder: (keys: string[]) => request<void>('PUT', '/api/kitt/rows/order', { keys }),
   kittData: (orders: string[]) => request<KittDataResponse>('POST', '/api/kitt/data', { orders }),
   kittDetail: (orders: string[]) => request<PickDetailResponse>('POST', '/api/kitt/detail', { values: orders }),
   kittPicks: (keys: string[], picked: boolean, method: 'scan' | 'manual') =>

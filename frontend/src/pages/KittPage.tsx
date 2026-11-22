@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, Button, Card, Empty, Form, Modal, Progress, Result, Select, Space, Tag, Tooltip, message } from 'antd'
-import { ApartmentOutlined, CheckSquareOutlined, EditOutlined, ReloadOutlined, SettingOutlined } from '@ant-design/icons'
+import { ApartmentOutlined, CheckSquareOutlined, EditOutlined, HolderOutlined, ReloadOutlined, SettingOutlined } from '@ant-design/icons'
 import KittPickModal from '../components/KittPickModal'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
@@ -31,6 +31,8 @@ export default function KittPage() {
   const nav = useNavigate()
   // Siparişler yalnızca Ön Montaj sayfasından (durum "Sıraya Alındı") gelir
   const [orders, setOrders] = useState<string[]>([])
+  const dragKey = useRef<string | null>(null)
+  const [overKey, setOverKey] = useState<string | null>(null)
   const [data, setData] = useState<KittDataResponse | null>(null)
   const [values, setValues] = useState<Record<string, Record<string, KittCell>>>({})
   const [options, setOptions] = useState<Record<string, string[]>>({})
@@ -105,7 +107,30 @@ export default function KittPage() {
 
   const setNotes = (key: string, colId: string, notes: KittNote[]) => applyLocal([key], colId, notes.length ? notes : null)
 
-  const extraColumns: ExtraColumn[] = useMemo(() => vcols.map((c) => ({
+  // Satırı tutaçtan sürükleyerek sıralama (sıra sunucuda saklanır)
+  const moveRow = async (from: string, to: string) => {
+    if (!data || from === to) return
+    const list = [...data.rows]
+    const i = list.findIndex((r) => r.__key === from)
+    const j = list.findIndex((r) => r.__key === to)
+    if (i < 0 || j < 0) return
+    const [item] = list.splice(i, 1)
+    list.splice(j, 0, item)
+    const before = data
+    setData({ ...data, rows: list })
+    try { await api.kittSetRowOrder(list.map((r) => r.__key)) } catch (e: any) { setData(before); message.error(e.message) }
+  }
+
+  const dragColumn: ExtraColumn = {
+    field: 'drag', title: '', width: 44, noFilter: true, fixed: 'left', exportValue: () => null,
+    render: (r: Row) => (
+      <span className="row-drag-handle" draggable title="Sıralamak için sürükleyin"
+        onDragStart={(e) => { dragKey.current = r.__key; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', r.__key) }}
+        onDragEnd={() => { dragKey.current = null; setOverKey(null) }}><HolderOutlined /></span>
+    ),
+  }
+
+  const extraColumns: ExtraColumn[] = useMemo(() => [dragColumn, ...vcols.map((c) => ({
     field: VC(c.id),
     title: c.name,
     width: c.width || (c.type === 'notes' ? 90 : c.type === 'checkbox' ? 80 : 160),
@@ -131,7 +156,7 @@ export default function KittPage() {
       />
     ),
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  })), [vcols, values, options])
+  }))], [vcols, values, options, data])
 
   const detailCfg = page?.detail
   const detailOn = !!(detailCfg?.enabled && detailCfg.bomSourceId)
@@ -240,6 +265,11 @@ export default function KittPage() {
             exportName="KITT_Hazirlama"
             layoutKey="kitt-table"
             linkFields={linkFields}
+            rowProps={(r) => ({
+              onDragOver: (e) => { if (dragKey.current) { e.preventDefault(); if (overKey !== r.__key) setOverKey(r.__key) } },
+              onDrop: (e) => { e.preventDefault(); const from = dragKey.current; dragKey.current = null; setOverKey(null); if (from) moveRow(from, r.__key) },
+              className: overKey === r.__key && dragKey.current && dragKey.current !== r.__key ? 'drag-over' : '',
+            })}
             toolbarRight={detailOn ? (
               <Tooltip title={selectedOrders.length
                 ? `${selectedOrders.join(', ')} birlikte toplanır; aynı malzemeler birleştirilir`

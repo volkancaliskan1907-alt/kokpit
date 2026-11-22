@@ -1,5 +1,5 @@
 {
-  "revision": 79,
+  "revision": 84,
   "general": {
     "companyName": "MEOS Elektronik",
     "departmentName": "Üretim Müdürlüğü",
@@ -525,7 +525,7 @@
           "fixed": false
         }
       ],
-      "stockSourceId": "stok",
+      "stockSourceId": "dsz5sk1wpzo0u",
       "stockMaterialColumn": "Malzeme",
       "stockAddressColumn": "Depo adresi",
       "stockQtyColumn": "Kullanılabilir stok",
@@ -608,7 +608,7 @@
     "stripLeft": 3,
     "stripRight": 0,
     "addressMatch": "eq",
-    "stockSourceId": "stok",
+    "stockSourceId": "dsz5sk1wpzo0u",
     "materialColumn": "Malzeme",
     "addressColumn": "Depo adresi",
     "qtyColumn": "Kullanılabilir stok",

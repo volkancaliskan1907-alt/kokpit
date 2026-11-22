@@ -39,7 +39,7 @@ export const NAV: NavGroup[] = [
       { key: 'orders.list', label: 'Seçilebilir Siparişler', desc: 'Kullanıcının listeden seçebileceği sipariş numaraları. Boşsa kaynaktaki tüm siparişler listelenir.', icon: <UnorderedListOutlined /> },
       { key: 'orders.lookup', label: 'Tablo Kolonları', desc: 'Mk. Sayı, Proje Sorumlu, Elek No, TDP Revizyonu, Özel İşlem kolonlarının hangi özel tablodan geleceği.', icon: <TableOutlined /> },
       { key: 'orders.sync', label: 'KITT Durum Eşleştirme', desc: 'KITT sayfasında bir durum seçilince Ön Montaj Durum kolonunun hangi değere döneceği.', icon: <SwapOutlined /> },
-      { key: 'orders.virtual', label: 'Seçim Kolonları', desc: 'Durum seçenekleri ve KİT TARİHİ gibi elle girilen kolonlar.', icon: <FormOutlined /> },
+      { key: 'orders.virtual', label: 'Giriş Kolonları', desc: 'Durum seçenekleri ve KİT TARİHİ gibi elle girilen kolonlar.', icon: <FormOutlined /> },
     ],
   },
   {

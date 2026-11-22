@@ -11,6 +11,8 @@ public class OnMontajState
     /// <summary>KITT hazırlama sayfasındaki siparişler (Ön Montaj'ta durum "Sıraya Alındı" olunca eklenir).</summary>
     public List<string> KitOrders { get; set; } = new();
     public bool KitSeeded { get; set; }
+    /// <summary>KITT hazırlama tablosunda kullanıcının sürükleyerek belirlediği satır sırası (satır anahtarları).</summary>
+    public List<string> KitRowOrder { get; set; } = new();
     /// <summary>KITT / DEKIT'ten elle silinen siparişler (Ön Montaj durumundan otomatik geri eklenmez).</summary>
     public List<string> KitRemoved { get; set; } = new();
 }
@@ -108,5 +110,12 @@ public class OnMontajStore : JsonFileStore<OnMontajState>
     public void SetOrder(IEnumerable<string> keys)
     {
         lock (Lock) { Data.Order = keys.Distinct().ToList(); Persist(); }
+    }
+
+    public List<string> KitRowOrder() { lock (Lock) return Data.KitRowOrder.ToList(); }
+
+    public void SetKitRowOrder(IEnumerable<string> keys)
+    {
+        lock (Lock) { Data.KitRowOrder = keys.Distinct().ToList(); Persist(); }
     }
 }
