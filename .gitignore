@@ -1,0 +1,10 @@
+node_modules/
+bin/
+obj/
+*.bak
+*.tsbuildinfo
+.vs/
+.vscode/
+
+# Çalışma verileri (şirket verisi içerebilir) – repoya girmez
+backend/MeosKokpit.Api/App_Data/
