@@ -6,5 +6,6 @@ obj/
 .vs/
 .vscode/
 
-# Çalışma verileri (şirket verisi içerebilir) – repoya girmez
-backend/MeosKokpit.Api/App_Data/
+# Çalışma verileri (şirket verisi içerebilir) repoya girmez; yalnızca ayarlar (config.json) takip edilir
+backend/MeosKokpit.Api/App_Data/*
+!backend/MeosKokpit.Api/App_Data/config.json

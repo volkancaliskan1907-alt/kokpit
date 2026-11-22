@@ -1,0 +1,921 @@
+{
+  "revision": 79,
+  "general": {
+    "companyName": "MEOS Elektronik",
+    "departmentName": "Üretim Müdürlüğü",
+    "appTitle": "Üretim Kokpiti",
+    "refreshSeconds": 5
+  },
+  "dataSources": [
+    {
+      "id": "isemri",
+      "name": "İş Emri Listesi",
+      "description": "Dizindeki tüm iş emri dosyaları birleştirilir",
+      "path": "C:\\Users\\Volkan\\Desktop\\volkan_kokpit\\hamveri\\Raporlar\\zaselpp0028 raporu_2.XLSX",
+      "filePattern": "*.xlsx;*.xls",
+      "mode": "merge",
+      "includeSubfolders": false,
+      "sheetName": null,
+      "headerRow": 1,
+      "addFileNameColumn": true,
+      "computedColumns": [
+        {
+          "id": "c1",
+          "name": "Depo Stok",
+          "type": "sumif",
+          "targetSourceId": "stok",
+          "keys": [
+            {
+              "localColumn": "Stok No",
+              "targetColumn": "Malzeme No"
+            }
+          ],
+          "targetValueColumn": "Serbest Stok",
+          "targetFilters": [],
+          "formula": null,
+          "defaultValue": null
+        },
+        {
+          "id": "c2",
+          "name": "Açık Satınalma",
+          "type": "sumif",
+          "targetSourceId": "satinalma",
+          "keys": [
+            {
+              "localColumn": "Stok No",
+              "targetColumn": "Malzeme No"
+            }
+          ],
+          "targetValueColumn": "Açık Miktar",
+          "targetFilters": [
+            {
+              "column": "Durum",
+              "operator": "eq",
+              "value": "Açık",
+              "value2": null
+            }
+          ],
+          "formula": null,
+          "defaultValue": null
+        },
+        {
+          "id": "c3",
+          "name": "En Yakın Teslim",
+          "type": "minif",
+          "targetSourceId": "satinalma",
+          "keys": [
+            {
+              "localColumn": "Stok No",
+              "targetColumn": "Malzeme No"
+            }
+          ],
+          "targetValueColumn": "Teslim Tarihi",
+          "targetFilters": [
+            {
+              "column": "Durum",
+              "operator": "eq",
+              "value": "Açık",
+              "value2": null
+            }
+          ],
+          "formula": null,
+          "defaultValue": null
+        },
+        {
+          "id": "c4",
+          "name": "Toplam İhtiyaç (Tüm Siparişler)",
+          "type": "sumif",
+          "targetSourceId": "isemri",
+          "keys": [
+            {
+              "localColumn": "Stok No",
+              "targetColumn": "Stok No"
+            }
+          ],
+          "targetValueColumn": "İhtiyaç Miktarı",
+          "targetFilters": [],
+          "formula": null,
+          "defaultValue": null
+        },
+        {
+          "id": "c5",
+          "name": "Eksik Miktar",
+          "type": "formula",
+          "targetSourceId": null,
+          "keys": [],
+          "targetValueColumn": null,
+          "targetFilters": [],
+          "formula": "EĞER([İhtiyaç Miktarı] \u003E [Depo Stok]; [İhtiyaç Miktarı] - [Depo Stok]; 0)",
+          "defaultValue": null
+        },
+        {
+          "id": "c6",
+          "name": "Durum",
+          "type": "formula",
+          "targetSourceId": null,
+          "keys": [],
+          "targetValueColumn": null,
+          "targetFilters": [],
+          "formula": "EĞER([Eksik Miktar] = 0; \u0022KARŞILANIYOR\u0022; EĞER([Depo Stok] \u002B [Açık Satınalma] \u003E= [İhtiyaç Miktarı]; \u0022SATINALMA BEKLENİYOR\u0022; \u0022EKSİK\u0022))",
+          "defaultValue": null
+        }
+      ]
+    },
+    {
+      "id": "dss5ulkjpmrqi",
+      "name": "Coois_bilesenler",
+      "description": "Coois  iş emrinin bileşen kalemleridir",
+      "path": "C:\\Users\\Volkan\\Desktop\\volkan_kokpit\\hamveri\\Raporlar\\coois_bileşenler.XLSX",
+      "filePattern": "*.xlsx;*.xls;*.xlsm;*.csv",
+      "mode": "latest",
+      "includeSubfolders": false,
+      "sheetName": null,
+      "headerRow": 1,
+      "addFileNameColumn": false,
+      "computedColumns": []
+    },
+    {
+      "id": "zmb52",
+      "name": "ZMB52 Stok (Kanban)",
+      "description": "Kanban depo yeri miktarları (adında mb52 geçen en güncel dosya)",
+      "path": "C:\\Users\\Volkan\\Desktop\\volkan_kokpit\\hamveri\\Raporlar\\mb52.XLSX",
+      "filePattern": "*mb52*.xlsx;*mb52*.xls",
+      "mode": "latest",
+      "includeSubfolders": false,
+      "sheetName": null,
+      "headerRow": 1,
+      "addFileNameColumn": false,
+      "computedColumns": []
+    },
+    {
+      "id": "dsz5sk1wpzo0u",
+      "name": "LX02",
+      "description": "",
+      "path": "C:\\Users\\Volkan\\Desktop\\volkan_kokpit\\hamveri\\Raporlar\\lx02_2.XLSX",
+      "filePattern": "*.xlsx;*.xls;*.xlsm;*.csv",
+      "mode": "latest",
+      "includeSubfolders": false,
+      "sheetName": null,
+      "headerRow": 1,
+      "addFileNameColumn": false,
+      "computedColumns": []
+    }
+  ],
+  "orderPage": {
+    "title": "Ön Montaj",
+    "sourceId": "isemri",
+    "orderColumn": "Üretim Siparişi",
+    "orders": [],
+    "orderDescriptionColumn": "Tanım",
+    "keyColumns": [
+      "Malzeme"
+    ],
+    "titleColumn": "Tanım",
+    "tbdkColumn": "Malzeme",
+    "projectColumn": null,
+    "qtyColumn": "Hedeflenen Miktar",
+    "virtualColumns": [
+      {
+        "id": "om_durum",
+        "name": "Durum",
+        "type": "select",
+        "options": [
+          "Geldi",
+          "Sıraya Alındı",
+          "Bekliyor",
+          "Hazırlanıyor",
+          "Hazır",
+          "Üretiliyor",
+          "Bitti"
+        ],
+        "optionsSourceId": null,
+        "optionsColumn": null,
+        "optionColors": {
+          "Hazır": "#d3ce36",
+          "Üretiliyor": "blue",
+          "Bitti": "green",
+          "Sıraya Alındı": "warning",
+          "Bekliyor": "cyan",
+          "Hazırlanıyor": "purple"
+        },
+        "width": 130
+      },
+      {
+        "id": "om_kit",
+        "name": "KİT TARİHİ",
+        "type": "date",
+        "options": [],
+        "optionsSourceId": null,
+        "optionsColumn": null,
+        "optionColors": {},
+        "width": 130
+      },
+      {
+        "id": "om_bitis",
+        "name": "Bitiş tarihi",
+        "type": "text",
+        "options": [],
+        "optionsSourceId": null,
+        "optionsColumn": null,
+        "optionColors": {},
+        "width": 120
+      }
+    ],
+    "lookupColumns": [
+      {
+        "id": "om_mk",
+        "name": "Mk. Sayı",
+        "tableId": "tb_mk",
+        "matchColumnId": "tb_mk_m",
+        "valueColumnId": "tb_mk_v",
+        "width": 100
+      },
+      {
+        "id": "om_proje",
+        "name": "PROJE",
+        "tableId": "tb_sorumlu",
+        "matchColumnId": "tb_so_m",
+        "valueColumnId": "tb_so_p",
+        "width": 170
+      },
+      {
+        "id": "om_sorumlu",
+        "name": "Proje Sorumlu",
+        "tableId": "tb_sorumlu",
+        "matchColumnId": "tb_so_m",
+        "valueColumnId": "tb_so_s",
+        "width": 190
+      },
+      {
+        "id": "om_elek",
+        "name": "Elek No",
+        "tableId": "tb_elek",
+        "matchColumnId": "tb_el_m",
+        "valueColumnId": "tb_el_v",
+        "width": 130
+      },
+      {
+        "id": "om_tdp",
+        "name": "TDP Revizyonu",
+        "tableId": "tb_tdp",
+        "matchColumnId": "tb_td_m",
+        "valueColumnId": "tb_td_v",
+        "width": 150
+      },
+      {
+        "id": "om_ozelacik",
+        "name": "ÖZEL İŞLEM AÇIKLAMA",
+        "tableId": "tb_ozelacik",
+        "matchColumnId": "tb_oa_m",
+        "valueColumnId": "tb_oa_v",
+        "width": 240
+      },
+      {
+        "id": "om_ozel",
+        "name": "ÖZEL İŞLEM",
+        "tableId": "tb_ozel",
+        "matchColumnId": "tb_oi_m",
+        "valueColumnId": "tb_oi_v",
+        "width": 150
+      }
+    ],
+    "kitSync": {
+      "kitColumnId": "v_durum",
+      "map": [
+        {
+          "kit": "Hazırlanıyor",
+          "onMontaj": "Hazırlanıyor"
+        }
+      ]
+    },
+    "pageSize": 100
+  },
+  "kittPage": {
+    "title": "KITT Hazırlama",
+    "sourceId": "isemri",
+    "orderColumn": "Üretim Siparişi",
+    "keyColumns": [
+      "İş Emri No",
+      "Stok No"
+    ],
+    "columns": [
+      {
+        "field": "Üretim Siparişi",
+        "label": null,
+        "width": null,
+        "format": "auto",
+        "decimals": null,
+        "aggregate": "none",
+        "fixed": false
+      },
+      {
+        "field": "Malzeme",
+        "label": null,
+        "width": null,
+        "format": "auto",
+        "decimals": null,
+        "aggregate": "none",
+        "fixed": false
+      },
+      {
+        "field": "Tanım",
+        "label": null,
+        "width": null,
+        "format": "auto",
+        "decimals": null,
+        "aggregate": "none",
+        "fixed": false
+      },
+      {
+        "field": "Hedeflenen Miktar",
+        "label": null,
+        "width": null,
+        "format": "auto",
+        "decimals": null,
+        "aggregate": "sum",
+        "fixed": false
+      }
+    ],
+    "virtualColumns": [
+      {
+        "id": "v_durum",
+        "name": "Hazırlık Durumu",
+        "type": "select",
+        "options": [
+          "Beklemede",
+          "Hazırlanıyor",
+          "Hazırlandı",
+          "Eksik",
+          "Teslim Edildi",
+          "DEKIT Geldi"
+        ],
+        "optionsSourceId": null,
+        "optionsColumn": null,
+        "optionColors": {
+          "Beklemede": "default",
+          "Hazırlanıyor": "processing",
+          "Hazırlandı": "success",
+          "Eksik": "error",
+          "Teslim Edildi": "purple",
+          "DEKIT Geldi": "gold"
+        },
+        "width": 160
+      },
+      {
+        "id": "v_tarih",
+        "name": "Hazırlık Tarihi",
+        "type": "date",
+        "options": [],
+        "optionsSourceId": null,
+        "optionsColumn": null,
+        "optionColors": {},
+        "width": 140
+      },
+      {
+        "id": "v_etiket",
+        "name": "Etiketler",
+        "type": "multiselect",
+        "options": [
+          "Etiket Geldi",
+          "Etiket Gelmedi",
+          "Etiket Talep Edildi"
+        ],
+        "optionsSourceId": null,
+        "optionsColumn": null,
+        "optionColors": {},
+        "width": 200
+      },
+      {
+        "id": "v_aciklama",
+        "name": "Açıklama",
+        "type": "textarea",
+        "options": [],
+        "optionsSourceId": null,
+        "optionsColumn": null,
+        "optionColors": {},
+        "width": 220
+      },
+      {
+        "id": "v_notlar",
+        "name": "Notlar",
+        "type": "notes",
+        "options": [],
+        "optionsSourceId": null,
+        "optionsColumn": null,
+        "optionColors": {},
+        "width": 110
+      },
+      {
+        "id": "vhp7zjqpafxv",
+        "name": "Hazırlayan",
+        "type": "multiselect",
+        "options": [
+          "Yasin",
+          "Sinan",
+          "Osman"
+        ],
+        "optionsSourceId": null,
+        "optionsColumn": null,
+        "optionColors": {},
+        "width": null
+      }
+    ],
+    "formatRules": [
+      {
+        "id": "k1",
+        "name": "Hazırlandı",
+        "enabled": true,
+        "column": "vc:v_durum",
+        "operator": "eq",
+        "value": "Hazırlandı",
+        "value2": null,
+        "compareColumn": null,
+        "target": "row",
+        "applyColumn": null,
+        "backColor": "#f0f9eb",
+        "foreColor": "#cf1322",
+        "bold": false,
+        "stopIfTrue": false
+      },
+      {
+        "id": "k2",
+        "name": "Eksik",
+        "enabled": true,
+        "column": "vc:v_durum",
+        "operator": "eq",
+        "value": "Eksik",
+        "value2": null,
+        "compareColumn": null,
+        "target": "row",
+        "applyColumn": null,
+        "backColor": "#fdecea",
+        "foreColor": null,
+        "bold": false,
+        "stopIfTrue": false
+      },
+      {
+        "id": "k3",
+        "name": "Miktar uyuşmazlığı",
+        "enabled": true,
+        "column": "vc:v_miktar",
+        "operator": "lt",
+        "value": null,
+        "value2": null,
+        "compareColumn": "İhtiyaç Miktarı",
+        "target": "cell",
+        "applyColumn": null,
+        "backColor": "#fff1b8",
+        "foreColor": null,
+        "bold": true,
+        "stopIfTrue": false
+      }
+    ],
+    "pageSize": 100,
+    "detail": {
+      "enabled": true,
+      "title": "KITT Toplama",
+      "triggerColumn": "Üretim Siparişi",
+      "bomSourceId": "dss5ulkjpmrqi",
+      "bomMatchColumn": "Sipariş",
+      "bomMaterialColumn": "Malzeme",
+      "bomColumns": [
+        {
+          "field": "Malzeme",
+          "label": null,
+          "width": 120,
+          "format": "text",
+          "decimals": null,
+          "aggregate": "none",
+          "fixed": false
+        },
+        {
+          "field": "Malzeme kısa metni",
+          "label": "Malzeme Tanımı",
+          "width": 280,
+          "format": "text",
+          "decimals": null,
+          "aggregate": "none",
+          "fixed": false
+        },
+        {
+          "field": "İhtiyaç miktarı (EINHEIT)",
+          "label": "İhtiyaç",
+          "width": 100,
+          "format": "number",
+          "decimals": 0,
+          "aggregate": "none",
+          "fixed": false
+        },
+        {
+          "field": "Açık miktar (EINHEIT)",
+          "label": "Açık",
+          "width": 90,
+          "format": "number",
+          "decimals": 0,
+          "aggregate": "none",
+          "fixed": false
+        },
+        {
+          "field": "Temel ölçü birimi (=EINHEIT)",
+          "label": "Birim",
+          "width": 70,
+          "format": "text",
+          "decimals": null,
+          "aggregate": "none",
+          "fixed": false
+        }
+      ],
+      "stockSourceId": "stok",
+      "stockMaterialColumn": "Malzeme",
+      "stockAddressColumn": "Depo adresi",
+      "stockQtyColumn": "Kullanılabilir stok",
+      "stockInfoColumns": [],
+      "maxAddresses": 3,
+      "stockFilters": [],
+      "scanEnabled": true,
+      "scanMatchColumn": "Malzeme",
+      "processTitle": "İşlem Tipi",
+      "processOptions": [
+        {
+          "label": "Delik içi",
+          "excludeFromCount": true,
+          "color": "orange",
+          "tableId": "tu21h0pe8bzk",
+          "matchColumnId": "cu27s35s2w8t",
+          "map": [
+            {
+              "tableColumnId": "cu3aq280pgou",
+              "source": "Malzeme kısa metni"
+            }
+          ]
+        },
+        {
+          "label": "Özel işlem",
+          "excludeFromCount": true,
+          "color": "purple",
+          "tableId": null,
+          "matchColumnId": null,
+          "map": []
+        }
+      ],
+      "markerColumns": [
+        {
+          "title": "PAP Kontrol",
+          "tableId": "twqtb5j45539",
+          "matchColumnId": "cwqxblarclzn",
+          "label": "Var",
+          "color": "green",
+          "absentLabel": "Yok",
+          "absentColor": "red"
+        }
+      ],
+      "kanban": {
+        "enabled": true,
+        "excludeFromCount": false,
+        "label": "Kanban",
+        "color": "cyan",
+        "tableId": "ttsnp69yqqsv",
+        "matchColumnId": "cttqxvxexpwh",
+        "stockSourceId": "zmb52",
+        "stockMaterialColumn": "Malzeme",
+        "stockDepotColumn": "Depo yeri",
+        "stockDepotValue": "6010",
+        "stockQtyColumn": "Miktar"
+      },
+      "virtualColumns": [
+        {
+          "id": "pv_aciklama",
+          "name": "Açıklama",
+          "type": "textarea",
+          "options": [],
+          "optionsSourceId": null,
+          "optionsColumn": null,
+          "optionColors": {},
+          "width": 200
+        }
+      ]
+    },
+    "autoDates": [
+      {
+        "statusColumnId": "v_durum",
+        "statusValue": "Hazırlandı",
+        "dateColumnId": "v_tarih"
+      }
+    ]
+  },
+  "dekit": {
+    "title": "DEKIT",
+    "stripLeft": 3,
+    "stripRight": 0,
+    "addressMatch": "eq",
+    "stockSourceId": "stok",
+    "materialColumn": "Malzeme",
+    "addressColumn": "Depo adresi",
+    "qtyColumn": "Kullanılabilir stok",
+    "depotColumn": "Depo yeri",
+    "kartDepotValue": "KART",
+    "maxKartAddresses": 3,
+    "stockFilters": [],
+    "columns": [
+      {
+        "field": "Malzeme",
+        "label": null,
+        "width": 120,
+        "format": "text",
+        "decimals": null,
+        "aggregate": "count",
+        "fixed": false
+      },
+      {
+        "field": "Malzeme kısa metni",
+        "label": "Malzeme Tanımı",
+        "width": 280,
+        "format": "text",
+        "decimals": null,
+        "aggregate": "none",
+        "fixed": false
+      },
+      {
+        "field": "Depo adresi",
+        "label": null,
+        "width": 130,
+        "format": "text",
+        "decimals": null,
+        "aggregate": "none",
+        "fixed": false
+      },
+      {
+        "field": "Depo yeri",
+        "label": null,
+        "width": 90,
+        "format": "text",
+        "decimals": null,
+        "aggregate": "none",
+        "fixed": false
+      },
+      {
+        "field": "Temel ölçü birimi",
+        "label": "Birim",
+        "width": 70,
+        "format": "text",
+        "decimals": null,
+        "aggregate": "none",
+        "fixed": false
+      }
+    ],
+    "bomSourceId": "dss5ulkjpmrqi",
+    "bomMatchColumn": "Sipariş",
+    "bomMaterialColumn": "Malzeme",
+    "statusColumnId": "v_durum",
+    "statusValue": "DEKIT Geldi",
+    "keepLabel": "Kalsın",
+    "goLabel": "Gitsin",
+    "externalTableId": "tyxbz8d26bsh",
+    "externalMatchColumnId": "cyxqpojsdxyo",
+    "externalLabel": "Harici stoklarda geçiyor",
+    "externalScope": "outside",
+    "compareScope": "kitt"
+  },
+  "customTables": [
+    {
+      "id": "ttsnp69yqqsv",
+      "name": "KANBAN",
+      "description": "Kart Dizgi de üretilen malzemeler için Çok tüketilen malzemelerin listesidir.",
+      "keyColumnId": null,
+      "columns": [
+        {
+          "id": "cttqxvxexpwh",
+          "name": "Stok No",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        },
+        {
+          "id": "cttzaj2xebbt",
+          "name": "Tanım",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        }
+      ]
+    },
+    {
+      "id": "tu21h0pe8bzk",
+      "name": "Delik İçi",
+      "description": "",
+      "keyColumnId": null,
+      "columns": [
+        {
+          "id": "cu27s35s2w8t",
+          "name": "Stok No",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        },
+        {
+          "id": "cu3aq280pgou",
+          "name": "Tanım",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        }
+      ]
+    },
+    {
+      "id": "twqtb5j45539",
+      "name": "PAP listesi",
+      "description": "",
+      "keyColumnId": null,
+      "columns": [
+        {
+          "id": "cwqxblarclzn",
+          "name": "Stok No",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        }
+      ]
+    },
+    {
+      "id": "tyxbz8d26bsh",
+      "name": "Harici Malzemeler",
+      "description": "",
+      "keyColumnId": null,
+      "columns": [
+        {
+          "id": "cyxqpojsdxyo",
+          "name": "Stok No",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        }
+      ]
+    },
+    {
+      "id": "tb_mk",
+      "name": "Ön Montaj - Mk. Sayı",
+      "description": "Malzeme (TBDK) -\u003E Makina sayısı",
+      "keyColumnId": "tb_mk_m",
+      "columns": [
+        {
+          "id": "tb_mk_m",
+          "name": "Malzeme",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        },
+        {
+          "id": "tb_mk_v",
+          "name": "Mk. Sayı",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        }
+      ]
+    },
+    {
+      "id": "tb_sorumlu",
+      "name": "Ön Montaj - Proje Sorumlu",
+      "description": "Malzeme -\u003E Proje sorumlusu",
+      "keyColumnId": "tb_so_m",
+      "columns": [
+        {
+          "id": "tb_so_m",
+          "name": "Malzeme",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        },
+        {
+          "id": "tb_so_t",
+          "name": "Tanım",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        },
+        {
+          "id": "tb_so_p",
+          "name": "MIP",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        },
+        {
+          "id": "tb_so_s",
+          "name": "Sorumlu",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        }
+      ]
+    },
+    {
+      "id": "tb_elek",
+      "name": "Ön Montaj - Elek No",
+      "description": "Malzeme (TBDK) -\u003E Elek No",
+      "keyColumnId": "tb_el_m",
+      "columns": [
+        {
+          "id": "tb_el_m",
+          "name": "Malzeme",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        },
+        {
+          "id": "tb_el_v",
+          "name": "Elek No",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        }
+      ]
+    },
+    {
+      "id": "tb_tdp",
+      "name": "Ön Montaj - TDP Revizyonu",
+      "description": "Malzeme (TBDK) -\u003E TDP Revizyonu",
+      "keyColumnId": "tb_td_m",
+      "columns": [
+        {
+          "id": "tb_td_m",
+          "name": "Malzeme",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        },
+        {
+          "id": "tb_td_v",
+          "name": "TDP Revizyonu",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        }
+      ]
+    },
+    {
+      "id": "tb_ozelacik",
+      "name": "Ön Montaj - Özel İşlem Açıklama",
+      "description": "Malzeme (TBDK) -\u003E Özel işlem açıklaması",
+      "keyColumnId": "tb_oa_m",
+      "columns": [
+        {
+          "id": "tb_oa_m",
+          "name": "Malzeme",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        },
+        {
+          "id": "tb_oa_v",
+          "name": "Özel İşlem Açıklama",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        }
+      ]
+    },
+    {
+      "id": "tb_ozel",
+      "name": "Ön Montaj - Özel İşlem",
+      "description": "Malzeme (TBDK) -\u003E Özel işlem",
+      "keyColumnId": "tb_oi_m",
+      "columns": [
+        {
+          "id": "tb_oi_m",
+          "name": "Malzeme",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        },
+        {
+          "id": "tb_oi_v",
+          "name": "Özel İşlem",
+          "type": "text",
+          "options": [],
+          "required": false,
+          "width": null
+        }
+      ]
+    }
+  ]
+}
